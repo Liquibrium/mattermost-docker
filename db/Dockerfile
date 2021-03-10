@@ -3,6 +3,7 @@ FROM postgres:9.4-alpine
 ENV DEFAULT_TIMEZONE UTC
 
 # Install some packages to use WAL
+RUN echo "azure<5.0.0" > pip-constraints.txt
 RUN apk add --no-cache \
       build-base \
       curl \
@@ -12,7 +13,10 @@ RUN apk add --no-cache \
       python-dev \
       py-pip \
       py-cryptography \
-    && pip --no-cache-dir install 'wal-e<1.0.0' envdir \
+      pv \
+      libressl-dev \
+    && pip install --upgrade pip \
+    && pip --no-cache-dir install -c pip-constraints.txt 'wal-e<1.0.0' envdir \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 # Add wale script
